@@ -58,7 +58,6 @@ matlab/labrun.m           simulate, measure ground truth, judge
 matlab/testlab.m          the student UI
 matlab/labselftest.m      pass, fail and rejected cases plus every robot
 matlab/getlab.m           pull the latest files from here
-webots-legacy/            the Webots implementation this replaced
 ```
 
 `labspec.m` is the single source of truth. The form students see is generated
@@ -70,8 +69,8 @@ The lab was first built on Webots, which is the better teaching simulator. It
 could not be shipped to a class: its macOS installer is not notarised, so macOS
 blocks it with a malware warning, and Homebrew disabled its `webots` cask on
 2026-09-01 for exactly that reason. Asking a software-quality class to click past
-a malware alert was not defensible. That implementation is kept under
-`webots-legacy/` as the evaluation it came from.
+a malware alert was not defensible. That implementation is in this
+repository's history up to commit `767eb58` if it is ever needed again.
 
 Gazebo and NVIDIA Isaac Sim were also considered and rejected — Gazebo requires
 students to write ROS code, and Isaac Sim needs an RTX 4080 and 32 GB of RAM and

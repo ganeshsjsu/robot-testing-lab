@@ -31,8 +31,7 @@ testlab         % opens the lab
 A robot must drive from a start pose to a goal inside a square arena without
 hitting anything. It carries a three-beam range sensor at 0° and ±25°, position
 and heading sensors, and **no map** — it steers at the goal and turns away from
-what the beams see. The failures students find are the real limits of that
-design, not planted bugs.
+what the beams see. 
 
 | | |
 |---|---|
@@ -60,18 +59,13 @@ matlab/labselftest.m      pass, fail and rejected cases plus every robot
 matlab/getlab.m           pull the latest files from here
 ```
 
-`labspec.m` is the single source of truth. The form students see is generated
-from it, so the ranges displayed and the ranges enforced cannot disagree.
 
 ## Why not Webots
 
 The lab was first built on Webots, which is the better teaching simulator. It
 could not be shipped to a class: its macOS installer is not notarised, so macOS
 blocks it with a malware warning, and Homebrew disabled its `webots` cask on
-2026-09-01 for exactly that reason. Asking a software-quality class to click past
-a malware alert was not defensible. That implementation is in this
-repository's history up to commit `767eb58` if it is ever needed again.
-
+2026-09-01 for exactly that reason. 
 Gazebo and NVIDIA Isaac Sim were also considered and rejected — Gazebo requires
-students to write ROS code, and Isaac Sim needs an RTX 4080 and 32 GB of RAM and
+users to write ROS code, and Isaac Sim needs an RTX 4080 and 32 GB of RAM and
 does not support macOS at all.

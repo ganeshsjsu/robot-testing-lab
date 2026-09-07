@@ -86,7 +86,7 @@ requirement using legal inputs **is**.
 3. Click into the **Command Window** and paste this one line, then press Enter:
 
    ```
-   websave('getlab.m','https://raw.githubusercontent.com/ganeshsjsu/webots-testing-lab/main/matlab/getlab.m'); getlab
+   websave('getlab.m','https://raw.githubusercontent.com/ganeshsjsu/robot-testing-lab/main/matlab/getlab.m'); getlab
    ```
 
    It downloads the lab and runs a self-check. You should see three lines
@@ -140,10 +140,20 @@ Find **four** inputs the system rejects, and record the exact message. At least
 one must be rejected because of a *combination* that is individually legal —
 each value inside its own documented range, but illegal together.
 
-**Task 4 — Reproducibility.**
-Set **Sensor noise to 0.2** first; with noise at 0 the seed does nothing. Run the
-same case twice with the same seed, then again changing only the seed. Report
-what stayed identical and what did not, and why a tester should care.
+**Task 4 — Reproducibility, in two parts.**
+With sensor noise at 0 the seed does nothing at all — confirm that first, in one
+line of your report.
+
+*Part A.* SINGLE_OBSTACLE, e-puck, 5.5 rad/s, 2 m arena, **sensor noise 0.10**.
+Run it with five different seeds. Report what changes and what does not.
+
+*Part B.* CORRIDOR with a 0.40 m gap, e-puck, 4.0 rad/s, **3.5 m arena**, 60 s
+limit, **sensor noise 0.15**. Run it with at least ten different seeds. Something
+happens here that did not happen in Part A.
+
+Then answer: if you found a failing case and reported it to a developer without
+telling them the seed, could they reproduce it? Use your two sets of runs to
+justify the answer rather than asserting it.
 
 **Task 5 — Find the smallest arena that works.**
 Pick a large robot and SINGLE_OBSTACLE. Find the smallest arena in which it can

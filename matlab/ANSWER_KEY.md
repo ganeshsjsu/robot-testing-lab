@@ -59,12 +59,37 @@ what the task requires:
 
 ## Task 4 — reproducibility
 
-With noise above 0: same seed reproduces the verdict and the measurements;
-changing the seed changes the trajectory and can flip a verdict near a boundary.
-With noise at 0 the seed does nothing.
+Measured over 20 seeds per setting; verified, not assumed.
 
-**Unverified:** I have not measured how far a seed change moves a verdict near a
-boundary. Check two or three cases before relying on it for marking.
+**Noise at 0:** the seed changes nothing — identical verdict, time and clearance.
+**Same seed, same inputs, run twice:** identical to the last digit.
+
+*Part A* (SINGLE_OBSTACLE, e-puck, 5.5 rad/s, 2 m arena, noise 0.10): **20/20
+PASS**, but the minimum clearance ranges 0.034 – 0.053 m across seeds. The
+measurements move; the verdict does not. Expected answer: away from a boundary,
+noise is visible in the numbers and invisible in the result.
+
+*Part B* (CORRIDOR 0.40 m, e-puck, 4.0 rad/s, 3.5 m arena, 60 s, noise 0.15):
+**17/20 PASS** — three seeds fail, by timeout. Same inputs, different seed,
+different verdict.
+
+Pass rate against noise at that corridor setting, if a student pushes further:
+
+| Noise | Pass rate |
+|---|---|
+| ≤ 0.10 | 20/20 |
+| 0.15 | 17/20 |
+| 0.20 | 7/20 |
+| 0.30 | 0/20 |
+
+The conclusion the task is driving at: a bug report without the seed is not
+reproducible, because at 0.15 the seed alone decides the verdict. A student who
+says "record the seed" has the answer; one who explains *why it only matters near
+a boundary* has understood it.
+
+Note 0.15 is a large sensor error — 15% of full scale, where a real
+time-of-flight sensor is nearer 1–2%. It is set high deliberately so the effect
+is visible in ten runs rather than a thousand.
 
 ## Task 5 — smallest workable arena
 

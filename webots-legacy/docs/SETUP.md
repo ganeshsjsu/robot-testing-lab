@@ -170,9 +170,9 @@ step 1.
 
 ## Step 4 — Download the lab
 
-1. Go to **<https://github.com/ganeshsjsu/webots-testing-lab>**
+1. Go to **<https://github.com/ganeshsjsu/robot-testing-lab>**
 2. Click the green **Code** button, then **Download ZIP**. No account needed.
-3. Unzip it. You will get a folder named `webots-testing-lab-main`.
+3. Unzip it. You will get a folder named `robot-testing-lab-main`.
 4. Move that folder somewhere plain — your Documents folder is ideal.
 
 Two things to avoid:
@@ -191,7 +191,7 @@ Two things to avoid:
 Start Webots, then *File → Open World…* and choose:
 
 ```
-webots-testing-lab-main/worlds/sw_testing_lab.wbt
+robot-testing-lab-main/worlds/sw_testing_lab.wbt
 ```
 
 You should see a square arena with a small round robot in one corner. The first

@@ -1,170 +1,78 @@
-# Robot Simulation Testing Lab
+# Robot Navigation Testing Lab
 
-A browser-accessible Webots lab for an SJSU software-testing class. Students
-do not write robot code. They pick a preconfigured scenario, set a small number
-of documented test inputs, run a real physics simulation, and read a Pass/Fail
-verdict with the measurements behind it.
+A browser-based lab for **SJSU CMPE/SE 187 (Software Quality Engineering)**.
+Students do not write code and install nothing. They pick a robot, set a handful
+of documented inputs, run a real simulation, and read a Pass/Fail verdict with
+the measurements behind it.
 
-The robot under test is an e-puck running a small reactive navigation
-controller. A Webots Supervisor acts as the test oracle: it configures the
-arena, observes ground truth from the scene tree, and decides the verdict
-against five fixed requirements. The controller cannot influence the verdict
-except by driving the robot.
-
-```
- Robot Window (HTML/JS in the browser)
-        │  parameters                       ▲  measurements + verdict
-        ▼                                   │
- test_supervisor.py  ── configures arena ──▶ Webots physics
-   (Supervisor,          resets robot        │
-    test oracle)         measures truth  ◀───┘
-        │  customData (run parameters)
-        ▼
- epuck_navigator.py  (the software under test)
-```
-
-## What a student sees
-
-1. Open a link. No install, no login, no GitHub, no security prompts.
-2. Choose one of five arena scenarios.
-3. Set inputs: speed, start pose, goal, obstacle position or corridor width,
-   sensor noise, time limit, noise seed.
-4. Press **Run test**. The 3D simulation runs live in the browser.
-5. Read the verdict, the per-requirement checks, and the measurements; the run
-   is appended to a test log they can download as CSV.
-
-Out-of-range input is rejected before any simulation starts, with a message
-naming the parameter and the legal range. That rejection is itself testable
-behaviour, and it is what REQ-5 is about.
-
-## Requirements under test
-
-| ID | Requirement |
-|---|---|
-| REQ-1 | Reach the target (centre within 0.10 m) before the time limit. |
-| REQ-2 | Do not collide with any obstacle or arena wall. |
-| REQ-3 | Keep at least 0.03 m clearance from every obstacle and wall. |
-| REQ-4 | Stay inside the arena. |
-| REQ-5 | Accept only documented input ranges; reject anything else without running a test. |
-
-The clearance figure is deliberate rather than arbitrary — see
-[docs/INSTRUCTOR_GUIDE.md](docs/INSTRUCTOR_GUIDE.md#why-003-m-and-not-010-m).
-
-## Does the parameter space contain real failures?
-
-Yes, and they are measured rather than assumed. `tools/run_matrix.py` runs a
-49-case matrix headlessly and currently produces **25 passing, 18 failing and
-10 rejected-input cases**, with boundaries on four independent axes:
-
-| Axis | Boundary |
-|---|---|
-| Wheel speed (open field, 30 s limit) | fails at ≤ 3.6 rad/s, passes at ≥ 3.8 rad/s |
-| Corridor width (4.0 rad/s) | fails at ≤ 0.35 m, passes at ≥ 0.40 m |
-| Sensor noise (single obstacle) | passes at ≤ 0.20, fails at ≥ 0.30 |
-| Scenario difficulty | dogleg and clutter fail at low speed, pass at high speed |
-
-Full tables, including the failure *reason* for every case, are in
-[docs/MEASURED_BOUNDARIES.md](docs/MEASURED_BOUNDARIES.md).
-
-No defects were seeded. Every failure above is the natural operating limit of a
-small reactive controller with short-range sensing and a finite steering
-bandwidth.
-
-## Repository layout
-
-```
-worlds/sw_testing_lab.wbt              arena, robot, obstacles, supervisor
-controllers/epuck_navigator/           the software under test
-controllers/test_supervisor/           the test oracle
-  lab_spec.py                          parameters, ranges, scenarios, requirements
-  test_supervisor.py                   configure / measure / judge, plus batch mode
-plugins/robot_windows/test_lab/        the browser UI (with the two vendored
-                                       Webots robot-window JS files)
-tools/run_matrix.py                    headless batch runner and pre-class check
-tools/validation_matrix.json           the 49-case validation matrix
-tools/make_boundary_report.py          regenerates docs/MEASURED_BOUNDARIES.md
-docs/                                  student guide, instructor guide, checklist
-webots.yaml                            webots.cloud publication descriptor
-```
-
-`lab_spec.py` is the single source of truth. The Robot Window builds its form
-from the specification the Supervisor sends it, so the ranges a student sees can
-never disagree with the ranges the Supervisor enforces.
+It runs in **MATLAB Online**, which SJSU licenses campus-wide, so any laptop with
+a browser will do — no download, no GPU, no version pinning, and nothing for
+macOS to block.
 
 ## Running it
 
-**In the Webots GUI** — this is the supported path for a class, and the one
-[docs/SETUP.md](docs/SETUP.md) documents step by step for students.
+Sign in to MATLAB Online through the
+[SJSU MathWorks portal](https://www.mathworks.com/academia/tah-portal/san-jose-state-university-31511582.html),
+then paste this into the Command Window:
 
-```bash
-webots worlds/sw_testing_lab.wbt
+```matlab
+websave('getlab.m','https://raw.githubusercontent.com/ganeshsjsu/robot-testing-lab/main/matlab/getlab.m'); getlab
 ```
 
-Then open the Supervisor's robot window (right-click the `test_supervisor`
-robot in the scene tree → *Show Robot Window*, or double-click it). The robot
-window has no network dependencies: the Webots `RobotWindow.js` API it needs is
-vendored into the project, so it works on a bad classroom network or none at
-all. See `plugins/robot_windows/test_lab/VENDORED.md`.
+Then:
 
-**Headless, for verification or CI**
-
-```bash
-export WEBOTS_HOME=/path/to/webots
-python3 tools/run_matrix.py --out results/matrix
-python3 tools/make_boundary_report.py
+```matlab
+labselftest     % three cases and every robot, to check it works
+testlab         % opens the lab
 ```
 
-The runner exits non-zero unless the matrix contains at least three passing
-cases, three failing cases and one rejected input, and unless repeated runs
-agree within tolerance. It takes about 90 seconds for all 49 cases.
+## What is under test
 
-**Publishing to webots.cloud**
+A robot must drive from a start pose to a goal inside a square arena without
+hitting anything. It carries a three-beam range sensor at 0° and ±25°, position
+and heading sensors, and **no map** — it steers at the goal and turns away from
+what the beams see. The failures students find are the real limits of that
+design, not planted bugs.
 
-Push this repository to GitHub, register it at <https://webots.cloud>, and share
+| | |
+|---|---|
+| Robots | e-puck, TurtleBot3 Burger, TurtleBot3 Waffle, Pioneer 3-DX, Clearpath Jackal, Clearpath Husky, and small and large car-like models |
+| Scenarios | open field, single obstacle, corridor, dogleg, clutter |
+| Arena | square, 1–6 m, every scenario scales with it |
+| Requirements | reach the goal in time, no collision, 0.03 m clearance, stay inside, reject undocumented input |
+
+The robots carry their real published dimensions, from 7 cm to 80 cm across, and
+the sensor, controller and requirements are identical for all of them — so any
+difference in verdict is caused by the machine and nothing else.
+
+## Layout
 
 ```
-https://webots.cloud/run?version=R2025a&url=https://github.com/<user>/<repo>/blob/main/worlds/sw_testing_lab.wbt&type=demo
+matlab/LAB_HANDOUT.md     hand this to students
+matlab/ANSWER_KEY.md      instructor only: every boundary, measured
+matlab/labspec.m          single source of truth: robots, scenarios, ranges, requirements
+matlab/labvalidate.m      REQ-5 input validation
+matlab/lablayout.m        scenario geometry
+matlab/labhalf.m          where the wall is, for a given arena size
+matlab/labrun.m           simulate, measure ground truth, judge
+matlab/testlab.m          the student UI
+matlab/labselftest.m      pass, fail and rejected cases plus every robot
+matlab/getlab.m           pull the latest files from here
+webots-legacy/            the Webots implementation this replaced
 ```
 
-Both `version` and `type=demo` are required: without `type` the webots.cloud
-router does not resolve `/run` to the simulation view at all.
+`labspec.m` is the single source of truth. The form students see is generated
+from it, so the ranges displayed and the ranges enforced cannot disagree.
 
-A run link is only as good as the simulation servers behind it. `/run` asks
-`webots.cloud/ajax/server/session.php` for a server, and when the public pool is
-empty that call answers *no simulation server available at the moment* for every
-world, including Cyberbotics' own demos. Check <https://webots.cloud/server>
-before a class; if the list is empty, the alternative is to register your own
-simulation server there.
+## Why not Webots
 
-Do not treat that link as classroom-ready until you have worked through
-[docs/VALIDATION_CHECKLIST.md](docs/VALIDATION_CHECKLIST.md). A working local
-run is not evidence that a public cloud simulation server will hold up for a
-class-sized group; that is the one thing this repository cannot verify for you.
+The lab was first built on Webots, which is the better teaching simulator. It
+could not be shipped to a class: its macOS installer is not notarised, so macOS
+blocks it with a malware warning, and Homebrew disabled its `webots` cask on
+2026-09-01 for exactly that reason. Asking a software-quality class to click past
+a malware alert was not defensible. That implementation is kept under
+`webots-legacy/` as the evaluation it came from.
 
-## Version pinning
-
-Authored and verified against **Webots R2025a**. The world header
-(`#VRML_SIM R2025a utf8`) and the `RobotWindow.js` import in the Robot Window
-both name that version; change them together. There is intentionally no
-`Dockerfile` — see [docs/DOCKER_IMAGE.md](docs/DOCKER_IMAGE.md).
-
-## Reproducibility
-
-The controller reads only noise-free sensors, and the sensor noise a student
-dials in comes from a generator seeded by the `seed` input, so a failing test
-can be handed to someone else and reproduced. `WorldInfo.randomSeed` is pinned.
-Verdicts and every discrete outcome reproduce exactly; continuous measurements
-reproduce to a fraction of a millimetre. The evidence is in the repeatability
-table of [docs/MEASURED_BOUNDARIES.md](docs/MEASURED_BOUNDARIES.md).
-
-## Documentation
-
-- [docs/SETUP.md](docs/SETUP.md) — student setup: install Webots and Python,
-  open the world, and self-check with three runs whose results are known. Hand
-  this out with the assignment.
-- [docs/STUDENT_GUIDE.md](docs/STUDENT_GUIDE.md) — hand this to students.
-- [docs/INSTRUCTOR_GUIDE.md](docs/INSTRUCTOR_GUIDE.md) — design decisions, how to
-  extend the lab, suggested assignments.
-- [docs/VALIDATION_CHECKLIST.md](docs/VALIDATION_CHECKLIST.md) — what must be
-  verified before the link goes to a class, and what has already been verified.
-- [docs/MEASURED_BOUNDARIES.md](docs/MEASURED_BOUNDARIES.md) — generated results.
+Gazebo and NVIDIA Isaac Sim were also considered and rejected — Gazebo requires
+students to write ROS code, and Isaac Sim needs an RTX 4080 and 32 GB of RAM and
+does not support macOS at all.

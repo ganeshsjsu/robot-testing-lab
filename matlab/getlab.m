@@ -9,7 +9,7 @@ function getlab()
 %
 %   Run  getlab  then  labselftest  (or  testlab ).
 
-base  = 'https://raw.githubusercontent.com/ganeshsjsu/webots-testing-lab/main/matlab/';
+base  = 'https://raw.githubusercontent.com/ganeshsjsu/robot-testing-lab/main/matlab/';
 files = {'labspec.m','labhalf.m','labvalidate.m','lablayout.m','labrun.m', ...
          'labselftest.m','labdemo.m','testlab.m','getlab.m'};
 stamp = num2str(round(posixtime(datetime('now'))));

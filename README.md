@@ -1,6 +1,6 @@
 # Robot Navigation Testing Lab
 
-A browser-based lab for **SJSU CMPE/SE 187 (Software Quality Engineering)**.
+A browser-based lab for **SJSU CMPE 187 (Software Quality Engineering)**.
 Students do not write code and install nothing. They pick a robot, set a handful
 of documented inputs, run a real simulation, and read a Pass/Fail verdict with
 the measurements behind it.
